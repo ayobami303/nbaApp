@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux'
-// import movies from '../modules/movies/movies.reducer'
+import login from './login'
+import app from './app'
 
 const rootReducer = combineReducers({
-	// movies
+	login,
+	app
 })
 
 export default rootReducer;

@@ -4,15 +4,22 @@ import ListView from "ListView";
 import Platform from "Platform";
 import React from "react";
 import { Text, View} from "react-native";
+import { navigator } from "react-native-navigation";
+import { connect } from 'react-redux'
 
-import FilterSessions from "./filterSessions";
-import groupSessions from "./groupSessions";
 import SessionCell from "./SessionCell";
 import SessionHeader from "./SessionHeader";
 
 // FIXME: Android has a bug when scrolling ListView the view insertions
 // will make it go reverse. Temporary fix - pre-render more rows
 const LIST_VIEW_PAGE_SIZE = Platform.OS === "android" ? 20 : 10;
+
+let dataSource = new ListView.DataSource({
+    getRowData: (dataBlob, sid, rid) => dataBlob[sid][rid],
+    getSectionHeaderData: (dataBlob, sid) => dataBlob[sid],
+    rowHasChanged: (row1, row2) => row1 !== row2,
+    sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+});
 
 class ScheduleListView extends React.Component {
 
@@ -26,20 +33,12 @@ class ScheduleListView extends React.Component {
 
     constructor(props: Props) {
         super(props);
-        let dataSource = new ListView.DataSource({
-            getRowData: (dataBlob, sid, rid) => dataBlob[sid][rid],
-            getSectionHeaderData: (dataBlob, sid) => dataBlob[sid],
-            rowHasChanged: (row1, row2) => row1 !== row2,
-            sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-        });
 
-        this.state = {
-            todaySessions: groupSessions(
-                FilterSessions.byDay(props.data, props.day)
-            ),
+        this.state = {            
             contentHeight: 0,
             containerHeight: 0,
-            dataSource: dataSource.cloneWithRowsAndSections(this.convertSessionArrayToMap(props.data))
+            dataSource: this.convertSessionArrayToMap(dataSource,props.data)
+            // dataSource: dataSource.cloneWithRowsAndSections(this.convertSessionArrayToMap(todaySessions))
         };
 
         (this: any).renderFooter = this.renderFooter.bind(this);
@@ -47,29 +46,26 @@ class ScheduleListView extends React.Component {
         (this: any).onContentSizeChange = this.onContentSizeChange.bind(this);
     }
 
-    convertSessionArrayToMap(session) {
-        var sessionCategoryMap = {}; // Create the blank map
-        session.forEach(function (sessionItem) {
-            if (!sessionCategoryMap[sessionItem.startTime]) {
-                // Create an entry in the map for the category if it hasn't yet been created
-                sessionCategoryMap[sessionItem.startTime] = [];
-            }
+    componentWillMount(){
 
-            sessionCategoryMap[sessionItem.startTime].push(sessionItem);
+    }
 
-        });
-
-        return sessionCategoryMap;
+    convertSessionArrayToMap(dataSource, data) {        
+        if (!data) {
+            return dataSource.cloneWithRows([]);
+        }
+        if (Array.isArray(data)) {
+            return dataSource.cloneWithRows(data);
+        }
+        return dataSource.cloneWithRowsAndSections(data);
 
     }
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.data !== nextProps.data) {
-            this.setState({
-                todaySessions: groupSessions(
-                    FilterSessions.byDay(props.data, props.day)
-                ),
-                dataSource: this.state.dataSource.cloneWithRowsAndSections(this.convertSessionArrayToMap(nextProps.data))
+            this.setState({                
+                dataSource: this.convertSessionArrayToMap(dataSource, nextProps.data)
+                // dataSource: this.state.dataSource.cloneWithRowsAndSections(this.convertSessionArrayToMap(todaySessions))
             });
         }
     }
@@ -105,6 +101,7 @@ class ScheduleListView extends React.Component {
     }
 
     renderRow(session: Session, day: 1) {
+        // alert(JSON.stringify(session))
         return (
             <SessionCell
                 onPress={_ => this.openSession(session, day)}
@@ -119,12 +116,15 @@ class ScheduleListView extends React.Component {
     }
 
     openSession(session: Session, day: number) {
-        let allSessions = { ...this.state.todaySessions };
-        // this.props.navigator.push({
-        //     day,
-        //     session,
-        //     allSessions
-        // });
+        // alert(JSON.stringify(session))
+        
+        this.props.navigator.push({
+            screen:'nbaApp.ScheduleDetail',
+            passProps:{
+                day,
+                session
+            }            
+        });
     }
 
 

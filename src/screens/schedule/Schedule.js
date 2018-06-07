@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
-import {Text, ScrollView, Dimensions } from 'react-native';
+import { Text, View, TouchableOpacity, ScrollView, Dimensions, StyleSheet } from 'react-native';
+import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native-scrollable-tab-view'
+import Icon from 'react-native-vector-icons/Ionicons'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
-
+import FilterSessions from "./filterSessions";
+import groupSessions from "./groupSessions";
 import ScheduleGantt from './ScheduleGantt';
 import ScheduleListView from "./ScheduleListView";
 import AppColors from '../../common/AppColors';
@@ -26,38 +31,116 @@ class Schedule extends Component {
     this.state = {
       now: props.presetDate
         ? currentTimeOnConferenceDay(props.presetDate)
-        : new Date().getTime()
+        : new Date().getTime(),
     };
+
+    // this.createTab();
+  }
+
+  createTab = (sessions) => {
+    let tabArray = [];
+    for (let i = 1; i <= 5; i++) {
+      let todaySessions = groupSessions(
+        FilterSessions.byDay(sessions, i)
+      );
+
+      tabArray.push(<View style={{flex:1, flexDirection: 'column'}} tabLabel= {`Day ${i}`} key = {`tab_${i}`}>
+        <ScrollView style={{ flex: 1, flexDirection: 'column'}}>
+          <ScheduleGantt
+            style={{              
+              backgroundColor: AppColors.color2,
+              paddingTop: 18,
+              paddingBottom: 12,
+              paddingHorizontal: GANTT_PADDDING_H
+            }}
+            sessions={sessions}
+            day={i}
+            width={GANTT_WIDTH}
+            now={this.state.now}
+          />
+
+          <ScheduleListView style = {{flex:1}}
+            data={todaySessions}
+            day = {i}
+            navigator = {this.props.navigator}
+          />
+        </ScrollView>
+      </View>);
+
+    }
+    
+    return tabArray;
   }
 
 
     render(){
-      const sessions = [{ id: 1, title: "Registration", day: 1, startTime: '2018-06-05 06:00', endTime: '2018-06-05 16:00', location: 'REGISTRATION' }, { id: 2, title: "Opening Speech", day: 1, startTime: '2018-06-05 07:00', endTime: '2018-06-05 07:30', location: '220A' }, { id: 3, title: "this is it", day: 1, startTime: '2018-06-05 08:00', endTime: '2018-06-05 10:30', location: '220B', hasDetails: true }, { id: 4, title: "Lunch", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 5, title: "Luncash", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 6, title: "Luncash", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 7, title: "Luncssh", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 8, title: "Luncsssh", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }];
+      const sessions = [
+        { id: 1, title: "Registration", day: 1, startTime: '2018-06-05 06:00', endTime: '2018-06-05 16:00', location: 'REGISTRATION', description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." },
+        { id: 1, title: "Registration", day: 2, startTime: '2018-06-05 06:00', endTime: '2018-06-05 16:00', location: 'REGISTRATION', description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."  }, 
+        { id: 2, title: "Opening Speech", day: 1, startTime: '2018-06-05 07:00', endTime: '2018-06-05 07:30', location: '220A', description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."  }, 
+        { id: 3, title: "this is it", day: 5, startTime: '2018-06-05 08:00', endTime: '2018-06-05 10:30', location: '220B', description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",  hasDetails: true }, 
+        { id: 4, title: "Lunch", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C', description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."  }, 
+        { id: 5, title: "Luncash", day: 4, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 6, title: "Luncawsh", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 7, title: "Luncssh", day: 2, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 8, title: "Luncsssh", day: 1, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 9, title: "Luncssssh", day: 2, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' },{ id: 10, title: "Luncssssh", day: 3, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }, { id: 11, title: "Lunscsssh", day: 2, startTime: '2018-06-05 13:00', endTime: '2018-06-05 14:00', location: '220C' }];
 
       const day = 1;
-
+      const height = Dimensions.get('window').height   
         
         return (
-            <ScrollView>
-                <ScheduleGantt
-                  style={{
-                      backgroundColor: AppColors.color2,
-                      paddingTop: 18,
-                      paddingBottom: 12,
-                      paddingHorizontal: GANTT_PADDDING_H
-                  }}
-                  sessions={sessions}
-                  day={day}
-                  width={GANTT_WIDTH}
-                  now={this.state.now}
-                />
+          <View style = {styles.container}>
+            <View style= {styles.headerContainer} >
+              
+              <Text style = {styles.title} >Schedule</Text>
+              <TouchableOpacity style={{ flex: 1, alignSelf: 'center'}} underlayColor='transparent' onPress={this.props.changeDate} >
+                  <Icon style={styles.navIcon} name="ios-map-outline" size={37} />
+                </TouchableOpacity>
+              
+            </View>
 
-                <ScheduleListView 
-                  data = {sessions}
+            <View style={{ flex: 1 }}>
+              <ScrollableTabView
+                initialPage={0}
+                onChangeTab={this._onChangeTab}
+                renderTabBar={() => <DefaultTabBar
+                  textStyle={{ color: 'black' }}
+                  backgroundColor='white'
+                  underlineStyle={{ backgroundColor: '#000' }}
+                  style={{ backgroundColor: '#fff' ,borderWidth: 0}}
                 />
-            </ScrollView>
+                }
+              >             
+                  {this.createTab(sessions)}
+              </ScrollableTabView>
+            </View>
+          </View>
         )
     }
 }
 
-export default Schedule;
+export default (Schedule);
+
+
+const styles = StyleSheet.create({
+  container:{
+    flex: 1 
+  },
+  headerContainer:{
+    padding:18,
+    flexDirection:'row'
+  },
+  navIcon:{
+    color:"black",
+    height: 37,
+    width: 30,
+    marginTop: 12,
+    alignSelf: 'flex-end',
+    marginRight: 15,
+  },
+  title:{
+    // textAlign: 'center',
+    alignSelf:'center',
+    flex:1,
+    fontSize:24,
+    fontWeight: 'bold',
+    color: 'black'
+  }
+})
