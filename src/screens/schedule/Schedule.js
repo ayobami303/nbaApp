@@ -5,11 +5,13 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
+import { logout } from "../../actions/init";
 import FilterSessions from "./filterSessions";
 import groupSessions from "./groupSessions";
 import ScheduleGantt from './ScheduleGantt';
 import ScheduleListView from "./ScheduleListView";
 import AppColors from '../../common/AppColors';
+import AppTitleHeader from '../../common/AppTitleHeader';
 
 
 
@@ -34,7 +36,6 @@ class Schedule extends Component {
         : new Date().getTime(),
     };
 
-    // this.createTab();
   }
 
   createTab = (sessions) => {
@@ -87,15 +88,12 @@ class Schedule extends Component {
         
         return (
           <View style = {styles.container}>
-            <View style= {styles.headerContainer} >
-              
-              <Text style = {styles.title} >Schedule</Text>
-              <TouchableOpacity style={{ flex: 1, alignSelf: 'center'}} underlayColor='transparent' onPress={this.props.changeDate} >
-                  <Icon style={styles.navIcon} name="ios-map-outline" size={37} />
-                </TouchableOpacity>
-              
-            </View>
-
+				<AppTitleHeader
+					  title= 'Schedule'					  
+					  bgColor = 'white'
+					  textColor =  'black'
+				/>
+           
             <View style={{ flex: 1 }}>
               <ScrollableTabView
                 initialPage={0}
@@ -116,7 +114,21 @@ class Schedule extends Component {
     }
 }
 
+function mapStateToProps(state, ownProps) {
+	return {
+		// details: state.movies.details,
+	}
+}
+
+// function mapDispatchToProps(dispatch) {
+// 	return{
+// 		actions:bindActionCreators(moviesActions, dispatch)
+// 	}
+// }
+
+
 export default (Schedule);
+// export default connect(mapStateToProps, {logout})(Schedule);
 
 
 const styles = StyleSheet.create({
@@ -130,15 +142,17 @@ const styles = StyleSheet.create({
   navIcon:{
     color:"black",
     height: 37,
-    width: 30,
-    marginTop: 12,
-    alignSelf: 'flex-end',
+    // width: 30,
+    // marginTop: 12,
+    alignSelf: 'center',
+    textAlign:'right',
     marginRight: 15,
+    flex: 1
   },
   title:{
     // textAlign: 'center',
     alignSelf:'center',
-    flex:1,
+    flex:2,
     fontSize:24,
     fontWeight: 'bold',
     color: 'black'

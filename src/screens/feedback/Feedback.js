@@ -4,18 +4,18 @@ import { Text, View } from "react-native";
 import AppTitleHeader from '../../common/AppTitleHeader';
 
 
-class Connect extends Component {
+class Feedback extends Component {
 
     constructor(props) {
-        super(props);
+        super(props);       
     }
 
     render() {
         return (
             <View>
                 <AppTitleHeader
-                    title='Connect'                    
-                    bgColor='#3949ab'
+                    title='Feedback'                    
+                    bgColor='#455a64'
                     textColor='white'
                 />
                 <Text>Hrer</Text>
@@ -24,4 +24,4 @@ class Connect extends Component {
     }
 }
 
-export default Connect;
+export default Feedback;

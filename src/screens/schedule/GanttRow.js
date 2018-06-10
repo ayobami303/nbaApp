@@ -51,7 +51,7 @@ export default class GanttRow extends React.Component {
     }
 
     return (
-      <View style={[styles.container, { top: offset, marginLeft: left - 2.5 }]}>
+      <View style={[styles.container, { top: offset, marginLeft: left }]}>
         <Text numberOfLines={1} style={styles.label}>
           {title}
         </Text>

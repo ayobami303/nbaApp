@@ -4,6 +4,12 @@ export function appInitialized() {
     };
 }
 
+export function logout(){
+    return function (dispatch) {
+        dispatch(changeAppRoot('login'))
+    }
+}
+
 export function changeAppRoot(root) {
     return { type: 'ROOT_CHANGED', root: root };
 }

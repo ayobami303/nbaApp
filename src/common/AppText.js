@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     fontFamily: AppFonts.p,
     fontSize: AppFonts.normalize(17),
     lineHeight: AppFonts.lineHeight(25), //, 1.25
-    color: AppColors.tangaroa
+    color: AppColors.black
   },
   // a: {
   //   color: AppColors.blue,

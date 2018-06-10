@@ -16,7 +16,7 @@ const navigatorStyle = {
     topBarElevationShadowEnabled: false,
     navBarHideOnScroll: true,
     tabBarHidden: false,
-    drawUnderTabBar: true,
+    drawUnderTabBar: false,
     navBarTransparent: true,
     drawUnderNavBar: true,
     navBarTranslucent: false,
@@ -29,11 +29,12 @@ export default class App {
     constructor() {
         store.subscribe(this.onStoreUpdate.bind(this));
         store.dispatch(appInitialized());
-        Reactotron.log("here")
     }
-
+    
     onStoreUpdate() {
         const { root } = store.getState().app;
+        Reactotron.log(root)
+        console.log(root)
         if (this.currentRoot !== root) {
             this.currentRoot = root;
             this.startApp(root);
@@ -71,7 +72,7 @@ export default class App {
                         },
                         {
                             label: 'Info',
-                            screen: 'nbaApp.Schedule',
+                            screen: 'nbaApp.Info',
                             icon: require('./asset/img/info.png'),
                             selectedIcon: require('./asset/img/info.png'),
                             title: ' Info',
@@ -79,7 +80,7 @@ export default class App {
                         },
                         {
                             label: 'Feedback',
-                            screen: 'nbaApp.Schedule',
+                            screen: 'nbaApp.Feedback',
                             icon: require('./asset/img/feedback.png'),
                             selectedIcon: require('./asset/img/feedback.png'),
                             title: ' Feedback',
@@ -91,7 +92,7 @@ export default class App {
                         screenBackgroundColor: '#fafafa',
                         orientation: 'portrait',
                         tabBarButtonColor: '#3A3A3A',
-                        tabBarSelectedButtonColor: '#549414',
+                        tabBarSelectedButtonColor: '#036735',
                         tabBarBackgroundColor: '#fafafa',
                         forceTitlesDisplay: true,
                     },
@@ -103,13 +104,14 @@ export default class App {
                 Navigation.startSingleScreenApp({
                     screen: {
                         screen: 'nbaApp.Login',
-                        title: 'login'
+                        title: 'login',
+                        navigatorStyle
                     }
                 })
             break;
             
             default:
-               console.log('some error occured')
+                Reactotron.log('some error occured')
             break;
         }
     }

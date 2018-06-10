@@ -7,10 +7,15 @@
     "test": "jest"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "moment-timezone": "^0.5.17",
     "react": "16.3.1",
     "react-native": "0.55.4",
+    "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^0.19.1",
+    "react-native-fcm": "^15.0.2",
+    "react-native-paystack": "^3.0.4",
+    "react-native-photo-upload": "^1.2.0",
     "react-native-scrollable-tab-view": "^0.8.0",
     "react-native-vector-icons": "^4.5.0",
     "react-redux": "^5.0.7",

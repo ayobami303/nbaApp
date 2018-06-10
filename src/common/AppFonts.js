@@ -4,7 +4,8 @@ import { Platform, Dimensions } from "react-native";
 
 const DEVICE_SCALE = Dimensions.get("window").width / 375;
 
-const DEFAULT_FONT = "helvetica";
+const PRIMARY_FONT = "helvetica";
+const DEFAULT_FONT = "museosans-300";
 const SECONDARY_FONT = Platform.OS === "android" ? "basis" : "helvetica";
 
 /* utils ==================================================================== */
@@ -34,6 +35,7 @@ function lineHeight(
 /* export =================================================================== */
 
 export default {
+  primary: PRIMARY_FONT,
   default: DEFAULT_FONT,
   helvetica: DEFAULT_FONT,
   basis: SECONDARY_FONT,

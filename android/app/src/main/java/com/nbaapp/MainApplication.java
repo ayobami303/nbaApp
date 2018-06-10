@@ -4,7 +4,12 @@ import android.app.Application;
 
 import com.reactnativenavigation.NavigationApplication;
 import com.facebook.react.ReactApplication;
+import com.evollu.react.fcm.FIRMessagingPackage;
+import com.arttitude360.reactnative.rnpaystack.RNPaystackPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
+import com.imagepicker.ImagePickerPackage;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
+import com.rnfs.RNFSPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -25,7 +30,11 @@ public class MainApplication extends NavigationApplication {
       // Add additional packages you require here
       // No need to add RnnPackage and MainReactPackage
       return Arrays.<ReactPackage>asList(
-        new VectorIconsPackage()
+        new VectorIconsPackage(),
+        new ImagePickerPackage(),
+        new ImageResizerPackage(),
+        new RNFSPackage(),
+        new RNPaystackPackage()
           // eg. new VectorIconsPackage()
       );
   }
