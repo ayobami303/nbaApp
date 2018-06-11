@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { ScrollView, View, Image, StyleSheet, Dimensions } from "react-native";
+import moment from "moment-timezone";
 
 import { Text, Heading1, Heading3, HeaderTitle, Paragraph } from "../../common/AppText";
 import AppColors from "../../common/AppColors";
 import formatDuration from "./formatDuration";
 import { AppHeader } from "../../common/AppHeader";
+import formatTime from "./formatTime";
 
 
 class ScheduleDetail extends Component{
@@ -28,11 +30,12 @@ class ScheduleDetail extends Component{
             <View style = {styles.container}>
                 <AppHeader />
                 <ScrollView style = {styles.content}>
-                    <Heading3 style = {styles.padding}>DAY 1  |  2:00pm</Heading3>
+                    <HeaderTitle style={[styles.titleText, styles.padding]}>DAY {session.day}  |  {formatTime(session.start_time)}</HeaderTitle>
                     <Heading1 style={styles.title}>{session.title}</Heading1>
-                    <HeaderTitle style={[styles.titleText, styles.padding]}>Eko Hotel - <Heading3>{formatDuration(session.startTime, session.endTime).toUpperCase()}</Heading3></HeaderTitle>
+                    <Heading3 style={styles.padding}>
+                        {formatDuration(moment.utc(session.start_time), moment.utc(session.end_time)).toUpperCase()}</Heading3>
                     <Paragraph style={styles.padding}>{session.description}</Paragraph>
-                    <Text style={styles.padding}>Speaker: Governor</Text>
+                    <Text style={styles.padding}>Speaker: {session.speaker}</Text>
                 </ScrollView>
             </View>
         )

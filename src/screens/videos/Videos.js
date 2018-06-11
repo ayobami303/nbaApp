@@ -8,12 +8,7 @@ import AppTitleHeader from '../../common/AppTitleHeader';
 class Videos extends Component{
 
     constructor(props){
-        super(props);
-        this.props.navigator.setTabBadge({
-            tabIndex: 3, // (optional) if missing, the badge will be added to this screen's tab
-            badge: 17, // badge value, null to remove badge
-            badgeColor: '#006400', // (optional) if missing, the badge will use the default color
-        });
+        super(props);       
     }
 
     renderVideos = () =>{

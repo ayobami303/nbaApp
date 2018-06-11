@@ -27,8 +27,8 @@ import type { Session } from "../../reducers/sessions";
 
 type StringMap = { [key: string]: boolean };
 
-function byDay(sessions: Array<Session>, day: number): Array<Session> {
-  return sessions.filter(session => session.day === day);
+function byDay(sessions: Array<Session>, day: number): Array<Session> {  
+  return sessions.filter(session => session.day === day.toString());
 }
 
 function byTopics(sessions: Array<Session>, topics: StringMap): Array<Session> {

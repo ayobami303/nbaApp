@@ -33,10 +33,12 @@ export default class F8ScheduleGantt extends React.Component {
       dayStart: earliest,
       dayEnd: latest
     };
+    
   }
 
   componentWillReceiveProps(nextProps) {
     const newState = {};
+    // alert(JSON.stringify(nextProps.sessions))
     if (nextProps.now !== this.props.now) {
       newState.now = nextProps.now;
     }
@@ -64,21 +66,21 @@ export default class F8ScheduleGantt extends React.Component {
       latest = null;
 
     (Object.keys(grouped) || []).map(title => {
-      let session = { title, startTime: null, endTime: null, times: [] };
+      let session = { title, start_time: null, end_time: null, times: [] };
       (grouped[title] || []).map(each => {
         // find the earliest and latest start/end times
-        if (!earliest || each.startTime < earliest) {
-          earliest = each.startTime;
+        if (!earliest || each.start_time < earliest) {
+          earliest = each.start_time;
         }
-        if (!latest || each.endTime > latest) {
-          latest = each.endTime;
+        if (!latest || each.end_time > latest) {
+          latest = each.end_time;
         }
         // update grouped session start/end times (if necessary)
-        if (!session.startTime || each.startTime < session.startTime) {
-          session.startTime = each.startTime;
+        if (!session.start_time || each.start_time < session.start_time) {
+          session.start_time = each.start_time;
         }
-        if (!session.endTime || each.endTime > session.endTime) {
-          session.endTime = each.endTime;
+        if (!session.end_time || each.end_time > session.end_time) {
+          session.end_time = each.end_time;
         }
         // pass through multiple times, deprecated
         if (title !== "Sessions" && each.times && each.times.length) {
@@ -112,7 +114,7 @@ export default class F8ScheduleGantt extends React.Component {
   groupSessionsIntoRows(all) {
     let grouped = {};
     (all || []).map(session => {
-      if (session.day !== this.props.day) {
+      if (session.day !== this.props.day.toString()) {
         return;
       }
       if (!session.hasDetails && !grouped[session.title]) {
@@ -180,10 +182,10 @@ export default class F8ScheduleGantt extends React.Component {
         containerWidth={this.props.width}
         dayStart={this.state.dayStart}
         dayEnd={this.state.dayEnd}
-        sessionStart={session.startTime}
-        sessionEnd={session.endTime}
+        sessionStart={session.start_time}
+        sessionEnd={session.end_time}
         sessionTimes={session.times}
-        location={session.location}
+        location= "220C"
         title={session.title}
         offset={offset}
         key={`GanttRow_${i}`}

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import { Button, FormInput, FormLabel } from "react-native-elements";
 
 import AppTitleHeader from '../../common/AppTitleHeader';
 
@@ -10,6 +11,11 @@ class Feedback extends Component {
         super(props);       
     }
 
+
+    onSubmitPress = () =>{
+        alert("thanks");
+    }
+
     render() {
         return (
             <View>
@@ -18,10 +24,41 @@ class Feedback extends Component {
                     bgColor='#455a64'
                     textColor='white'
                 />
-                <Text>Hrer</Text>
+                <View style = {styles.container}>
+                    <View style = {styles.formContainer}>
+                        <FormLabel>TOPIC</FormLabel>
+                        <FormInput 
+                            placeholder = 'topic goes here'
+                        />
+
+                        <FormLabel>MESSAGE</FormLabel>
+                        <FormInput
+                            placeholder='message goes here'
+                            multiline = {true}
+                        />
+
+                        <Button
+                            title = "SUBMIT"
+                            style = {styles.submitButton}
+                            onPress ={() => {this.onSubmitPress()}}
+                            />
+                    </View>
+                </View>
             </View>
         )
     }
 }
 
 export default Feedback;
+
+const styles = StyleSheet.create({
+    container:{
+        paddingVertical: 18
+    },
+    formContainer:{
+
+    },
+    submitButton:{
+        marginTop: 10
+    }
+})

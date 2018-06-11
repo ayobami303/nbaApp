@@ -34,7 +34,8 @@ public class MainApplication extends NavigationApplication {
         new ImagePickerPackage(),
         new ImageResizerPackage(),
         new RNFSPackage(),
-        new RNPaystackPackage()
+        new RNPaystackPackage(),
+        new FIRMessagingPackage()
           // eg. new VectorIconsPackage()
       );
   }

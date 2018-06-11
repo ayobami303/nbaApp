@@ -4,14 +4,17 @@ import ScrollableTabView, { ScrollableTabBar, DefaultTabBar } from 'react-native
 import Icon from 'react-native-vector-icons/Ionicons'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import _ from "lodash";
 
-import { logout } from "../../actions/init";
+import { getSchedule } from "../../actions/schedule";
 import FilterSessions from "./filterSessions";
 import groupSessions from "./groupSessions";
 import ScheduleGantt from './ScheduleGantt';
 import ScheduleListView from "./ScheduleListView";
 import AppColors from '../../common/AppColors';
-import AppTitleHeader from '../../common/AppTitleHeader';
+import AppTitleHeader from '../../common/AppTitleHeader'; 
+import {AppLoading} from '../../common/AppLoading';
+import EmptyPage from '../../common/EmptyPage';
 
 
 
@@ -29,44 +32,68 @@ class Schedule extends Component {
 
   constructor(props) {
     super(props);
+    this.timer;
 
     this.state = {
-      now: props.presetDate
-        ? currentTimeOnConferenceDay(props.presetDate)
-        : new Date().getTime(),
+      now: this.currentTime(),
     };
 
   }
 
+  componentWillMount(props){
+    this.props.getSchedule();
+    this.timer = setInterval(() => {
+      this.currentTime();
+      this.props.getSchedule();      
+    }, 10000);
+  }
+
+  componentWillUnmount(props) {
+    clearInterval(this.timer);
+  }
+
+  currentTime = () =>{
+    return new Date().getTime();
+  }
+
+
   createTab = (sessions) => {
+    // alert(JSON.stringify(sessions));
     let tabArray = [];
     for (let i = 1; i <= 5; i++) {
       let todaySessions = groupSessions(
         FilterSessions.byDay(sessions, i)
       );
+      // alert(JSON.stringify(_.size(todaySessions)))
+      if (_.size(todaySessions) > 0){
+        tabArray.push(<View style={{flex:1, flexDirection: 'column'}} tabLabel= {`Day ${i}`} key = {`tab_${i}`}>
+          <ScrollView style={{ flex: 1, flexDirection: 'column'}}>
+            <ScheduleGantt
+              style={{              
+                backgroundColor: AppColors.color2,
+                paddingTop: 18,
+                paddingBottom: 12,
+                paddingHorizontal: GANTT_PADDDING_H
+              }}
+              sessions={sessions}
+              day={i}
+              width={GANTT_WIDTH}
+              now={this.state.now}
+            />
 
-      tabArray.push(<View style={{flex:1, flexDirection: 'column'}} tabLabel= {`Day ${i}`} key = {`tab_${i}`}>
-        <ScrollView style={{ flex: 1, flexDirection: 'column'}}>
-          <ScheduleGantt
-            style={{              
-              backgroundColor: AppColors.color2,
-              paddingTop: 18,
-              paddingBottom: 12,
-              paddingHorizontal: GANTT_PADDDING_H
-            }}
-            sessions={sessions}
-            day={i}
-            width={GANTT_WIDTH}
-            now={this.state.now}
-          />
-
-          <ScheduleListView style = {{flex:1}}
-            data={todaySessions}
-            day = {i}
-            navigator = {this.props.navigator}
-          />
-        </ScrollView>
-      </View>);
+            <ScheduleListView style = {{flex:1}}
+              data={todaySessions}
+              day = {i}
+              navigator = {this.props.navigator}
+            />
+          </ScrollView>
+        </View>);
+      }else{
+        tabArray.push(<View style={{ flex: 1, flexDirection: 'column' }} tabLabel={`Day ${i}`} key={`tab_${i}`}>
+          <EmptyPage topic = "schedule"/>
+        </View>
+        )
+      }
 
     }
     
@@ -85,14 +112,16 @@ class Schedule extends Component {
 
       const day = 1;
       const height = Dimensions.get('window').height   
+      const { schedule } = this.props;
         
         return (
+          schedule.isLoading ? <AppLoading /> :
           <View style = {styles.container}>
-				<AppTitleHeader
-					  title= 'Schedule'					  
-					  bgColor = 'white'
-					  textColor =  'black'
-				/>
+            <AppTitleHeader
+                title= 'Schedule'					  
+                bgColor = 'white'
+                textColor =  'black'
+            />
            
             <View style={{ flex: 1 }}>
               <ScrollableTabView
@@ -106,7 +135,7 @@ class Schedule extends Component {
                 />
                 }
               >             
-                  {this.createTab(sessions)}
+                {this.createTab(schedule.data)}
               </ScrollableTabView>
             </View>
           </View>
@@ -115,8 +144,9 @@ class Schedule extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
+  // alert(JSON.stringify(state.schedule))
 	return {
-		// details: state.movies.details,
+		schedule: state.schedule.data,
 	}
 }
 
@@ -127,8 +157,8 @@ function mapStateToProps(state, ownProps) {
 // }
 
 
-export default (Schedule);
-// export default connect(mapStateToProps, {logout})(Schedule);
+// export default (Schedule);
+export default connect(mapStateToProps, { getSchedule })(Schedule);
 
 
 const styles = StyleSheet.create({

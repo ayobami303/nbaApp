@@ -113,8 +113,8 @@ class SessionCell extends React.Component {
                 numberOfLines={1}
                 style={styles.duration}
             >
-                <Text style={{ color: AppColors.colorForLocation(session.location) }}>
-                    {session.location.toUpperCase()}
+                <Text style={{ color: AppColors.colorForLocation("210F") }}>
+                    {"210F"}
                 </Text>
                 {" - "}
                 {this.getFormattedTime()}
@@ -136,9 +136,9 @@ class SessionCell extends React.Component {
     }
 
     getFormattedTime() {
-        const { startTime, endTime } = this.props.session;
-        const startTimeN = moment.utc(startTime);
-        const endTimeN = moment.utc(endTime);
+        const { start_time, end_time } = this.props.session;
+        const startTimeN = moment.utc(start_time);
+        const endTimeN = moment.utc(end_time);
         if (this.props.showStartEndTime) {
             return formatTime(startTimeN, true) + "-" + formatTime(endTimeN);
         } else {
