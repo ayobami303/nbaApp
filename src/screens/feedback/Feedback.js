@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { Button, FormInput, FormLabel, FormValidationMessage } from "react-native-elements";
+import { connect } from "react-redux";
 
 import AppTitleHeader from '../../common/AppTitleHeader';
-
+import {AppLoading} from '../../common/AppLoading';
+import { addFeedback } from "../../actions/feedback";
 
 class Feedback extends Component {
 
@@ -52,7 +54,7 @@ class Feedback extends Component {
             error++;
         }
 
-        if (error <= 0) {
+        if (error > 0) {
             this.props.navigator.showInAppNotification({
                 screen: 'nbaApp.ErrorNotification',
                 passProps: {
@@ -60,12 +62,7 @@ class Feedback extends Component {
                 },
             })
         }else{
-            this.props.navigator.showInAppNotification({
-                screen: 'nbaApp.SuccessNotification',
-                passProps: {
-                    message: 'feedback submitted successfully.'
-                },
-            })
+            this.props.addFeedback(2, topic, message);            
         }
     }
 
@@ -104,12 +101,23 @@ class Feedback extends Component {
                             />
                     </View>
                 </View>
+
+                {this.props.feedback.isLoading &&
+                    <AppLoading />
+                } 
             </View>
         )
     }
 }
 
-export default Feedback;
+function mapStateToProps(state, ownProps) {
+	// alert(JSON.stringify(state.feedback));
+	return {
+		feedback: state.feedback.data
+	};
+}
+
+export default connect(mapStateToProps, {addFeedback})(Feedback);
 
 const styles = StyleSheet.create({
     container:{

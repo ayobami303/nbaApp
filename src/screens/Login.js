@@ -11,6 +11,15 @@ import { login } from "../actions/login";
 import { AppLoading } from "../common/AppLoading";
 
 
+const navigatorStyle = {
+    drawUnderNavBar: true,
+    navBarTranslucent: true,
+    navBarTransparent: true,
+    topBarElevationShadowEnabled: false,
+    navBarButtonColor: 'white'
+}
+
+
 class Login extends Component {
     constructor(props){
         super(props)
@@ -49,6 +58,50 @@ class Login extends Component {
         this.notificationListener.remove();
     }
 
+    componentWillReceiveProps(nextProps){
+        
+        if(nextProps.loginn.result){
+            // alert(JSON.stringify(nextProps.loginn.result));
+            const { stage, user_id, email } = nextProps.loginn.result;
+            if (stage == 'photo') {
+                this.props.navigator.push({
+                    screen: 'nbaApp.RegistrationPhoto',
+                    title: '',
+                    animationType: 'fade',
+                    animated: true,
+                    navigatorStyle,
+                    passProps: {
+                        title: 'Photo Upload',
+                        email,
+                        user_id
+                    },
+                    navigatorButtons: {
+                        leftButtons: [
+                            {}
+                        ]
+                    }
+                })                
+            }else if (stage == 'payment') {
+                this.props.navigator.push({
+                    screen: 'nbaApp.ProcessPayment',
+                    title: '',
+                    animationType: 'fade',
+                    animated: true,
+                    navigatorStyle,
+                    passProps: {
+                        email,
+                        user_id
+                    },
+                    navigatorButtons: {
+                        leftButtons: [
+                            {}
+                        ]
+                    }
+                })
+            }
+
+        }
+    }
 
     onUsernameChange = (text) =>{       
         this.setState({ username: text })
@@ -76,13 +129,12 @@ class Login extends Component {
             this.setState({
                 isLoading: true
             })
-            this.props.login();
+            this.props.login(username, password);
 
         }
         this.setState({
             isLoading: true
         })
-        this.props.login();
 
     }
 
@@ -141,7 +193,7 @@ class Login extends Component {
                     </View>
 
                 </View>
-                {this.state.isLoading &&
+                {this.props.loginn.isLoading &&
                     <AppLoading />
                 } 
             
@@ -150,7 +202,9 @@ class Login extends Component {
     }
 }
 function mapStateToProps(state, ownProps) {
-    return { };
+    return { 
+        loginn: state.login.data
+    };
 }
 
 export default connect(mapStateToProps, {login})(Login);

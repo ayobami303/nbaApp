@@ -13,7 +13,8 @@
       android:icon="@mipmap/ic_launcher"
       android:allowBackup="false"
       tools:replace="allowBackup"
-      android:theme="@style/AppTheme">
+      android:theme="@style/AppTheme"
+      android:largeHeap="true">
 
       <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@mipmap/ic_launcher"/>
 

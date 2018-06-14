@@ -162,7 +162,7 @@ export default class App {
                     Reactotron.log('some error occured')
                 break;
             }
-        })
+        }) //.purge()
     }
 }
 

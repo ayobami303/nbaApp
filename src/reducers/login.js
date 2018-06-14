@@ -1,12 +1,20 @@
 const initialState = {
-    user: null,
-    root: null
+    data:{
+        isLoading: false,
+        result: null 
+    }
 };
 
 function login(state = initialState, action) {
     switch (action.type) {
-        case 'LOGIN_SUCCESSFULL':
-            return { ...state, login: action.login }
+        case 'LOGIN_SUCCESS':
+            return { ...state, data: { isLoading: false, result: action.result } }
+            break;
+        case 'LOGIN_FAILED':
+            return { ...state, data: { isLoading: false } }
+            break;
+        case 'LOGIN_LOADING':
+            return {...state, data: { isLoading: true } }
             break;
         default:
             return state;

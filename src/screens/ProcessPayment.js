@@ -1,11 +1,16 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet, Picker } from "react-native";
+import { View, Text, StyleSheet, Picker, BackHandler, Alert } from "react-native";
 import { Button, FormLabel, FormInput, FormValidationMessage } from "react-native-elements";
 import RNPaystack from 'react-native-paystack';
 import axios from "axios";
+import { connect } from "react-redux";
 
 import { AppHeader } from "../common/AppHeader";
+import { AppLoading } from "../common/AppLoading";
 import { Heading1 } from "../common/AppText";
+import { processPayment } from "../actions/registration";
+
+
 class ProcessPayment extends Component{
 
     constructor(props){
@@ -22,6 +27,37 @@ class ProcessPayment extends Component{
             isLoading: false
         }
     }
+
+    componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton =() =>{
+        Alert.alert(
+            'Alert',
+            'Are you sure you want to quit',
+            [
+                { text: 'NO', onPress: () => console.log('Cancel Pressed') },
+                {
+                    text: 'YES', onPress: () => {
+                        this.props.navigator.popToRoot({
+                            animated: true,
+                            animationType: 'fade'
+                        })
+                        // BackHandler.exitApp()
+                    }
+                },
+            ],
+            { cancelable: true }
+        )
+        // ToastAndroid.show('Back button is pressed', ToastAndroid.SHORT);
+        return true;
+    }
+
 
     monthItem = () =>{
         let itemArray = [];
@@ -64,14 +100,15 @@ class ProcessPayment extends Component{
 
     chargeCard = (cardNumber, month, year, cvv) => {
 
-        const { email, isMember } = this.props;
-        let amount;
-        if(isMember){
-            amount = 5000;
-        }else{
-            amount = 5000;            
-        }
-        alert(cvv);
+        const { email, isMember, amount } = this.props;
+        // let amount;
+        // if(isMember){
+        //     amount = 5000;
+        // }else{
+        //     amount = 5000;            
+        // }
+        let newAmount = amount.split('.')
+        // alert(amount+' '+ newAmount[0] +' '+ month+' '+ year+' '+ cardNumber);
 
         RNPaystack.chargeCard({
             cardNumber: cardNumber.toString(),
@@ -79,7 +116,7 @@ class ProcessPayment extends Component{
             expiryYear: year.toString(),
             cvc: cvv.toString(),
             email: email,
-            amountInKobo: amount,
+            amountInKobo: newAmount[0] * 100,
             
         }).then(response => {
             // alert(JSON.stringify(response));
@@ -90,20 +127,22 @@ class ProcessPayment extends Component{
                 this.props.navigator.showInAppNotification({
                     screen: 'nbaApp.ErrorNotification',
                     passProps: {
-                        message: 'Something happened. pls try again.'
+                        message: 'Something went wrong. pls try again.'
                     },
                 })
             }
+            this.setState({ isLoading: false });                
+            
             console.log(response); // card charged successfully, get reference here
-        })
-        .catch(error => {
+        }).catch(error => {
             this.props.navigator.showInAppNotification({
                 screen: 'nbaApp.ErrorNotification',
                 passProps: {
-                    message: 'Something happened. pls try again.'
+                    message: 'Something went wrong. pls check card detail and try again.'
                 },
             })
-            alert(JSON.stringify(error))
+            this.setState({ isLoading: false });                
+            // alert(JSON.stringify(error))
             console.log(error); // error is a javascript Error object
             console.log(error.message);
             console.log(error.code);
@@ -111,33 +150,18 @@ class ProcessPayment extends Component{
 
     }
 
-    verifyCharge = (reference) =>{
-        // this.state.reference;
-        // const request = axios.get(`https://api.paystack.co/transaction/verify/${this.state.reference}`)
-        //     .then(res => {
-        //         const data = this.state.youtubeVideos;
-        //         data.push(res.data.items[0])
-        //         this.setState({ youtubeVideos: data })
-        //     })
-        //     .catch(error => {
-        //         console.log(error);
-        //     })
+    verifyCharge = (reference) =>{        
         const thiss = this;
         axios({
             method: 'get',
-            headers: { "authorization":"Bearer sk_test_b280b7d96975702ae1045f74dcc11ca9a7383b2a"},
+            headers: { "Authorization":"Bearer sk_live_7dcc3bf8c9d0485d467676432854fb46d283e917"},
             url: "https://api.paystack.co/transaction/verify/"+reference,
         })
         .then(function (response) {
-            // alert(JSON.stringify(response.data.status));
+            // alert(JSON.stringify(reference));
             if (response.data.status) {
-                thiss.props.navigator.showInAppNotification({
-                    screen: 'nbaApp.SuccessNotification',
-                    passProps: {
-                        message: 'Payment successful.'
-                    },
-                })
-
+                thiss.props.processPayment(thiss.props.user_id, reference);
+                
                 thiss.props.navigator.popToRoot({
                     animated: true,
                     animationType: 'fade'
@@ -152,7 +176,7 @@ class ProcessPayment extends Component{
             }
             thiss.setState({isPaid: true})
         }).catch(error =>{
-            alert(error);
+            // alert(error);
         });
     }
 
@@ -207,7 +231,8 @@ class ProcessPayment extends Component{
             error++;
         }
 
-        if (error <= 0) {                      
+        if (error <= 0) {  
+            this.setState({ isLoading: true });                
             this.chargeCard(cardNumber.split(' ').join(''), month, year, cvv);
         }else{
             this.props.navigator.showInAppNotification({
@@ -280,12 +305,22 @@ class ProcessPayment extends Component{
                         onPress={() => { this.onSubmitPress() }}
                     />
                 </View>
+                {this.state.isLoading &&
+                    <AppLoading />
+                }
             </View>
         )
     }
 }
 
-export default ProcessPayment;
+function mapStateToProps(state, ownProps) {
+    return {
+        registration: state.registration.data
+    };
+}
+
+
+export default connect(mapStateToProps,{ processPayment })(ProcessPayment);
 
 const styles = StyleSheet.create({
     container:{

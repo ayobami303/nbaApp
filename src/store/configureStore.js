@@ -13,6 +13,7 @@ let middleware = [thunk];
 
 const manifest = {
 	1: (state) => ({ ...state }),
+	1: (state) => ({ ...state }),
 
 };
 
@@ -22,9 +23,9 @@ const manifest = {
 
 const persistConfig = {
   key: 'primary',
-  version: 1,
+  version: 2,
   storage,
-	blacklist: ['app'],
+	blacklist: ['app', 'login', 'feedback', 'registration', 'amount', 'validate'],
 	migrate: createMigrate(manifest, { debug: false }),
 }
 
@@ -50,22 +51,3 @@ export default function configureStore(initialState){
 	// 	applyMiddleware(...middleware)
 	// )
 }
-
-
-
-// export default function configureStore(initialState) {
-// 	const store = Reactotron.createStore(
-// 		reducers,
-// 		initialState,
-// 		compose(
-// 			applyMiddleware(...middleware),
-// 			migration,
-// 			autoRehydrate()
-// 		)
-// 	);
-// 	// whitelist and blacklist or try using persist/REHYDRATE action:type to reset some values
-// 	persistStore(store, { storage: AsyncStorage }); //.purge();
-// 	// persistStore(store, { storage: AsyncStorage, blacklist: ['app', 'user'] }); //.purge();
-
-// 	return store;
-// }

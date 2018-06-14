@@ -4,7 +4,9 @@ import { connect } from "react-redux";
 import { Button, FormInput, FormLabel } from "react-native-elements";
 
 import { AppHeader } from "../common/AppHeader";
+import { AppLoading } from "../common/AppLoading";
 import { Heading1, HorizontalRule } from "../common/AppText";
+import { validate } from "../actions/registration";
 
 const navigatorStyle = {
     drawUnderNavBar: true,
@@ -20,8 +22,10 @@ class Registration extends Component {
     constructor(props){
         super(props);
         this.state = {
+            memButton: 'VALIDATE',
             rollNo: '',
-            name: ''
+            name: '',
+            yearOfCall: ''
         }
     }
 
@@ -37,16 +41,31 @@ class Registration extends Component {
         })
     }
 
+    componentWillReceiveProps(nextProps){
+        if(nextProps.validatee.data){
+            this.setState({ 
+                rollNo: nextProps.validatee.data.EnrolNo,
+                yearOfCall: nextProps.validatee.data.YearOfCall,
+                memButton: 'REGISTER'
+            })
+            // alert(JSON.stringify(nextProps.validatee.data));
+        }
+        // const { isLoading } = this.props;
+    }
 
     onMemReg = () =>{
-        const { name }    = this.state;
-        if(name.trim() === ''){
-            this.props.navigator.showInAppNotification({
-                screen: 'nbaApp.ErrorNotification',
-                passProps: {
-                    message: 'pls fill all fields.'
-                },
-            })
+        const { name, rollNo, yearOfCall }    = this.state;
+        if(rollNo === ''){
+            if(name.trim() === ''){
+                this.props.navigator.showInAppNotification({
+                    screen: 'nbaApp.ErrorNotification',
+                    passProps: {
+                        message: 'pls fill all fields.'
+                    },
+                })
+            }else{
+                this.props.validate(name);
+            }  
         }else{
             this.props.navigator.push({
                 screen: 'nbaApp.RegistrationForm',
@@ -57,10 +76,17 @@ class Registration extends Component {
                 passProps:{
                     title:'NBA Member',
                     nameOnRoll: this.state.name,
-                    isMember: true
+                    isMember: true,
+                    rollNo,
+                    yearOfCall                    
+                },
+                navigatorButtons: {
+                    leftButtons: [
+                        {}
+                    ]
                 }
             })
-        }  
+        }
     }
 
     onNonMemReg = () =>{
@@ -72,7 +98,7 @@ class Registration extends Component {
             navigatorStyle,
             passProps: {
                 title: 'Non NBA Member',
-                isMember: false
+                isMember: false,
             }
         })
     }
@@ -91,15 +117,17 @@ class Registration extends Component {
                             placeholder='NAME'                                                        
                             onChangeText={(text) => { this.onNameChange(text) }} />
                         <FormInput
-                            placeholder='ROLL NO'
+                            placeholder='SUPREME COURT ENROLLMENT NUMBER (SCN)'
                             keyboardType="numeric"
                             underlineColorAndroid = '#D5E3D3'
+                            editable = {false}
+                            value = {this.state.rollNo}
                             onChangeText={(text => { this.onRollChange(text) })}
                         />
                         <View style={styles.buttonContainer}>
                             <View style={{ flex: 1 }}>
                                 <Button
-                                    title='VALIDATE'
+                                    title={this.state.memButton}
                                     fontWeight='bold'
                                     buttonStyle={styles.submitButton}
                                     onPress={() => { this.onMemReg() }}
@@ -119,16 +147,23 @@ class Registration extends Component {
 
                     </View>               
                 </View>
+
+                
+                {this.props.validatee.isLoading &&
+                    <AppLoading />
+                } 
             </View>
         )
     }
 }
 
 function mapStateToProps(state, ownProps) {
-    return {};
+    return {
+        validatee: state.validate.data
+    };
 }
 
-export default connect(mapStateToProps)(Registration);
+export default connect(mapStateToProps, {validate})(Registration);
 
 const styles = StyleSheet.create({
     container:{
